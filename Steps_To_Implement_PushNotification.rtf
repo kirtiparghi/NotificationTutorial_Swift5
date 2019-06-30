@@ -1,0 +1,121 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1671\cocoasubrtf200
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fswiss\fcharset0 Helvetica-Bold;\f2\fmodern\fcharset0 Courier;
+\f3\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red0\green0\blue0;\red255\green255\blue255;
+}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0\c4706;\cssrgb\c0\c0\c0\c84314;\cssrgb\c100000\c100000\c100000;
+}
+\margl1440\margr1440\vieww14820\viewh6680\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs28 \cf0 *******************************************************************
+\f1\b \
+NOTE ABOUT SLIENT PUSH NOTIFICATION \
+
+\f0\b0 To implement slient push notification in the app, you have to activate Backgroud Mode Capabilities with remote notifications. Some new delegate methods must be implemented depending on which state the app has and the flag content-available set to 1 in json.\
+*******************************************************************\
+\
+
+\f1\b STEPS FOR IMPLEMENTING PUSH NOTIFICATION \
+\
+1. Register App Push Notifications
+\f0\b0 \
+First, the app must obtain a token from the APNS(Apple Push Notification Service). The token that uniquely identifies your app, is made from the app using the UNUserNotificationCenter class. In order for the app to be able to receive push notifications at all, the switch for push notifications must be activated in the capability settings.\
+A new provisioning profile will be created with push notification capability.\
+\
+The request can now be made to APNS using requestAuthorization method. After that if user agrees, the app should request the app token via registerForRemoteNotifications.\
+\
+
+\f1\b 2. Receive Token From APNS\
+
+\f0\b0 After the request via registerForRemoteNotifications was successful, the function application:didRegisterForRemoteNotificationsWithDeviceToken is called in the appdelegate. \
+\
+
+\f1\b 3. Update Backend Service with Information about Device/User\
+
+\f0\b0 In order for your private server to know which devices have registered for which push notifications, it needs to know that this has been approved.\
+\
+
+\f1\b 4. Provider sends Request to APNS\
+
+\f0\b0 Only requests that are authenticated with an authentication-token may be sent to the APNS. This ensures that only the originator of the authentication-token has the possibility to send notifications to his users. This token can be used for all your apps in all forms. (Development, Production)\
+\
+To create one you need to go o the Apple Member Center and create one, give it a name and download it. You should now have a file with the .p8 extension.\
+\
+
+\f1\b 5. APNS sending push notifications\
+
+\f0\b0 The push notifications arrive in the form of JSON. The maximum size of this file is 4kb. If it exceeds the size, it will simply not be delievered.\
+The format of this JSON is partly given by Apple. Here is an example for a possible configuration :\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f2\fs32 \cf0 \cb2 \expnd0\expndtw0\kerning0
+\{\
+   "aps" : \{\
+      "alert" : \{\
+         "title" : "Hello World",\
+         "subtitle" : "This is awesome"\
+         "body\'94 : \'93Even more Content",\
+         "thread_identifier": "Master-Thread"
+\f3 \cb1 \
+
+\f2 \cb2       \},\
+     "badge": 12,\
+     "sound": "customSound.caf"\
+   \},\
+   "custom-data" : \{\
+     "custom-element": "custom-value"\
+   \}\
+\}
+\f3 \cb1 \
+\pard\pardeftab720\partightenfactor0
+\cf0 \cb2 HTTP HEADER FIELDS\
+apns-collapse-id\
+\
+\pard\pardeftab720\li600\fi-600\partightenfactor0
+
+\f1\b\fs28 \cf0 \cb4 aps
+\f0\b0  \'97 top element defined by apple\
+
+\f1\b alert
+\f0\b0  \'97 will contain message specific items\
+
+\f1\b title
+\f0\b0  \'97 title of the notification\
+
+\f1\b subtitle
+\f0\b0  \'97 subtitle of the notification\
+
+\f1\b body
+\f0\b0  \'97 body of notification that be hidden via touch or face-id\
+
+\f1\b thread_identifier \'97 
+\f0\b0 USED FOR GROUPED NOTIFICATIONS\cb1 \kerning1\expnd0\expndtw0 \
+
+\f1\b \cb4 \expnd0\expndtw0\kerning0
+custom-data
+\f0\b0  \'97 You custom json should be provided under the aps object\
+
+\f1\b apns-collapse-id
+\f0\b0  \'97 a HTTP-Header Field which defines that new messages replace the old ones.\
+\
+
+\f1\b 6. Responding to Interaction\
+
+\f0\b0 After push notification has arrived on the user\'92s device, he can interact with it\
+\
+
+\f1\b 7. Custom Actions\
+
+\f0\b0 It is possible to define different categories within the app. These categories consist of a unique identifier and a set of actions. After they have been defined they only have to be added to the UNUserNotificationCenter.\
+\
+
+\f1\b 8. Payload Modification\
+
+\f0\b0 You can format content of push notification using \'93Notification Service Extension\'94. Mediator between user interface and APNS. \
+\
+
+\f1\b 9. Custom UI\
+
+\f0\b0 Use notification content extension for this purpose. The target will contain a new ViewController, a plist and a Storyboard which can be modified as you wish.}
